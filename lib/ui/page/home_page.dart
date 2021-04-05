@@ -4,32 +4,30 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_app_wandroid/dio/api.dart';
 import 'file:///D:/flutter/FlutterDemo/app_wandroid/flutter_app_wandroid/lib/ui/widget/article_item.dart';
 
-
+/**
+ * 首页文章列表 以及banner图
+ * 1.先在State中声明接受数据的变量
+ * 2.在initState方法中请求网络数据并赋值给声明的变量
+ * 3.编写布局  注意布局是一个最外层的listview包裹一个bannerview和多个listview item组成的列表
+ */
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
-  ///滑动控制器
+  ///滑动控制器 -->用于判断是否拉到屏幕底部进行加载更多的操作
   ScrollController _controller = new ScrollController();
-
-  ///控制正在加载的显示
+  ///控制正在加载的显示  -->后修改至 easyloading
   bool _isHide = true;
-
-  ///请求到的文章数据
-  List articles = [];
-
-  ///banner图
-  List banners = [];
-
+  ///请求到的文章数据集合
+  List articlesList = [];
+  ///banner列表集合
+  List bannersList = [];
   ///总页数
   var totalCount = 0;
-
   ///分页加载，当前页码
-  var curPage = 0;
-
+  var currentPage = 0;
   ///访问数据
   @override
   void initState() {
@@ -37,13 +35,10 @@ class _HomePageState extends State<HomePage> {
     _controller.addListener(() {
       ///获得 SrollController 监听控件可以滚动的最大范围
       var maxScroll = _controller.position.maxScrollExtent;
-
       ///获得当前位置的像素值
       var pixels = _controller.position.pixels;
-
-      ///当前滑动位置到达底部，同时还有更多数据
-      if (maxScroll == pixels && curPage < totalCount) {
-        ///加载更多
+      ///当前滑动位置到达底部，同时还有更多数据 也就是当前页码小于总页码时，执行加载更多的操作
+      if (maxScroll == pixels && currentPage < totalCount) {
         _getArticlelist();
       }
     });
@@ -57,22 +52,18 @@ class _HomePageState extends State<HomePage> {
   }
   ///获取文章列表
   _getArticlelist([bool update = true]) async {
-    /// 请求成功是map，失败是null
-    var data = await Api.getArticleList(curPage);
+    var data = await Api.getArticleList(currentPage);
     if (data != null) {
       var map = data['data'];
       var datas = map['datas'];
-
       ///文章总数
       totalCount = map["pageCount"];
-
-      if (curPage == 0) {
-        articles.clear();
+      ///如果当前页码是0 证明是执行的下拉刷新或者第一次加载数据，要清空原来的数据集合
+      if (currentPage == 0) {
+        articlesList.clear();
       }
-      curPage++;
-      articles.addAll(datas);
-
-      ///更新ui
+      currentPage++;
+      articlesList.addAll(datas);
       if (update) {
         setState(() {});
       }
@@ -82,8 +73,8 @@ class _HomePageState extends State<HomePage> {
   _getBanner([bool update = true]) async {
     var data = await Api.getBanner();
     if (data != null) {
-      banners.clear();
-      banners.addAll(data['data']);
+      bannersList.clear();
+      bannersList.addAll(data['data']);
       if (update) {
         setState(() {});
       }
@@ -91,7 +82,7 @@ class _HomePageState extends State<HomePage> {
   }
   ///下拉刷新
   Future<void> _pullToRefresh() async {
-    curPage = 0;
+    currentPage = 0;
     ///组合两个异步任务，创建一个都完成后的新的Future
     Iterable<Future> futures = [_getArticlelist(), _getBanner()];
     await Future.wait(futures);
@@ -112,16 +103,17 @@ class _HomePageState extends State<HomePage> {
         ),
 
         ///内容
+        ///一个最外层的下拉刷新组件RefreshIndicator
+        ///包裹一层ListView
+        ///_buildItem adapter条目item，banner列表也作为一个条目添加到adapter中去
         Offstage(
           offstage: _isHide,
           ///SwipeRefresh 下拉刷新组件
           child: new RefreshIndicator(
               child: ListView.builder(
-                //条目数 +1代表了banner的条目
-                itemCount: articles.length + 1,
-                //adapter条目item 视图生成方法
-                itemBuilder: (context, i) => _buildItem(i),
-
+                //item总条目数 +1代表了banner的条目,比如文章列表的总条数是9，这时候在前面插入了一个banner列表所以整个listview的总条目会变成10，所以要+1
+                itemCount: articlesList.length + 1,
+                itemBuilder: (context, i) => _buildItem(i),//adapter条目item 视图生成方法
                 controller: _controller,
               ),
               onRefresh: _pullToRefresh),
@@ -129,33 +121,26 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
-
+  ///添加adapter的item条目
   Widget _buildItem(int i) {
-
+    ///如果当前条目的下表索引是0  也就是第一条，则显示为banner列表，否则显示为文章列表
     if (i == 0) {
-      //Container ：容器
       return new Container(
-        //MediaQuery.of(context).size.height: 全屏幕高度
-        height: MediaQuery.of(context).size.height*0.3,
+        height: MediaQuery.of(context).size.height*0.3,//高度设置为屏幕总高度(MediaQuery.of(context).size.height) 的 0.3
         child: _bannerView(),
       );
     }
-    var itemData = articles[i - 1];
+    var itemData = articlesList[i - 1];
     return new ArticleItem(itemData);
   }
 
   Widget _bannerView() {
-    //map:转换 ,将List中的每一个条目执行 map方法参数接收的这个方法,这个方法返回T类型，
-    //map方法最终会返回一个  Iterable<T>
-    List<Widget> list = banners.map((item) {
+    List<Widget> list = bannersList.map((item) {
       return Image.network(item['imagePath'], fit: BoxFit.cover); //fit 图片充满容器
     }).toList();
-    return list.isNotEmpty
-        ? BannerView(
-      list,
-      //控制轮播时间
-      intervalDuration: const Duration(seconds: 3),
-    )
+    ///判断数据不为空
+    return list.isNotEmpty ? BannerView(list, //控制轮播时间
+      intervalDuration: const Duration(seconds: 3),)
         : null;
   }
 

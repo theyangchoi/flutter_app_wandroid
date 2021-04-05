@@ -56,7 +56,9 @@ class DioManager{
         LoadingUtils.dismiss();
       }
     }
-
+    ///response.data  请求成功是一个map最终需要将map进行转换 , 请求失败直接返回null
+    ///map:转换 ,将List中的每一个条目执行 map方法参数接收的这个方法,这个方法返回T类型，
+    ///map方法最终会返回一个  Iterable<T>
     return response.data;
   }
 
@@ -83,7 +85,9 @@ class DioManager{
         LoadingUtils.dismiss();
       }
     }
-
+    ///response.data  请求成功是一个map最终需要将map进行转换 , 请求失败直接返回null
+    ///map:转换 ,将List中的每一个条目执行 map方法参数接收的这个方法,这个方法返回T类型，
+    ///map方法最终会返回一个  Iterable<T>
     return response.data;
   }
 }
