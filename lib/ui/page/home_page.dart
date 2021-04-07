@@ -1,8 +1,7 @@
 import 'package:banner_view/banner_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_app_wandroid/dio/api.dart';
-import 'file:///D:/flutter/FlutterDemo/app_wandroid/flutter_app_wandroid/lib/ui/widget/article_item.dart';
+import 'package:flutter_app_wandroid/ui/widget/article_item.dart';
 
 /**
  * 首页文章列表 以及banner图
