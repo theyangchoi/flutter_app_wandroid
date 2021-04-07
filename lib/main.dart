@@ -4,6 +4,7 @@ import 'package:flutter_app_wandroid/ui/page/splash_page.dart';
 import 'package:flutter_app_wandroid/utils/navigator_util.dart';
 import 'package:flutter_app_wandroid/utils/path_util.dart';
 import 'package:flutter_app_wandroid/utils/sp_util.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'network/base/base_page.dart';
 import 'network/common/theme.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'FlutterWanAndroid',
             navigatorKey: NavigatorUtil.navKey,
+            builder: EasyLoading.init(),
             theme: ThemeData(
               cupertinoOverrideTheme: CupertinoThemeData(
                 primaryColor: model.getThemeColor,

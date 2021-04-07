@@ -8,8 +8,8 @@ class LoadingWidget extends StatelessWidget {
     return Center(
         child: Container(
       color: Colors.white,
-      width: winWidth,
-      height: winHeight,
+      width: 0,
+      height: 0,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,5 +1,4 @@
 import 'dio_mamager.dart';
-import 'http_util.dart';
 
 typedef void OnResult(Map<String,dynamic> data);
 
@@ -15,8 +14,9 @@ class Api{
   static getProjectTree()async{
     return DioManager().get('project/tree/json');
   }
-  static Future getProjectList({page = 0, cid = 294}) =>
-      HttpUtil.requestGet('project/list/$page/json?cid=$cid');
+  static getProjectList({page = 0, cid = 294}) async{
+    return DioManager().get('project/list/$page/json?cid=$cid');
+  }
   ///API实现
   ///获取首页文章列表  使用$符号拼接地址ARTICLE_LIST  以及  页码 page
   static getArticleList(int page) async {
