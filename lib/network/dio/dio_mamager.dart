@@ -1,8 +1,8 @@
 
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_app_wandroid/dialog/loading_utils.dart';
-import 'package:flutter_app_wandroid/dio/api.dart';
+import 'package:flutter_app_wandroid/ui/dialog/loading_utils.dart';
+
+import 'api.dart';
 
 class DioManager{
   Dio _dio;

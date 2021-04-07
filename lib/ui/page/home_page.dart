@@ -1,6 +1,6 @@
 import 'package:banner_view/banner_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_wandroid/dio/api.dart';
+import 'package:flutter_app_wandroid/network/dio/api.dart';
 import 'package:flutter_app_wandroid/ui/widget/article_item.dart';
 
 /**
@@ -130,17 +130,21 @@ class _HomePageState extends State<HomePage> {
       );
     }
     var itemData = articlesList[i - 1];
-    return new ArticleItem(itemData);
+    return new GestureDetector(
+      ///item点击事件
+      onTap: (){
+        debugPrint("itemClick:$i");
+      },
+      child: new ArticleItem(itemData),
+    );
   }
 
   Widget _bannerView() {
     List<Widget> list = bannersList.map((item) {
       return Image.network(item['imagePath'], fit: BoxFit.cover); //fit 图片充满容器
     }).toList();
-    ///判断数据不为空
-    return list.isNotEmpty ? BannerView(list, //控制轮播时间
-      intervalDuration: const Duration(seconds: 3),)
-        : null;
+    ///判断数据不为空  //控制轮播时间intervalDuration
+    return list.isNotEmpty ? BannerView(list, intervalDuration: const Duration(seconds: 3),): null;
   }
 
 
