@@ -23,12 +23,6 @@ class DioManager{
       receiveTimeout: 5000,);
 
     _dio = new Dio(_baseOptions);
-
-    // _dio.interceptors.add(
-    //   InterceptorsWrapper(onRequest: (RequestOptions options){
-    //     return options;
-    //   }),
-    // );
   }
 
   /**

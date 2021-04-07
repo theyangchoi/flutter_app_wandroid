@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app_wandroid/ui/page/classification_dart.dart';
+import 'package:flutter_app_wandroid/ui/page/classification_page.dart';
 import 'package:flutter_app_wandroid/ui/page/home_page.dart';
-import 'package:flutter_app_wandroid/ui/page/mine_dart.dart';
+import 'package:flutter_app_wandroid/ui/page/mine_page.dart';
 import 'package:flutter_app_wandroid/ui/page/project_page.dart';
 
 /**
