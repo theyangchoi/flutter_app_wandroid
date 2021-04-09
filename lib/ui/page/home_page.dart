@@ -1,7 +1,15 @@
-import 'package:banner_view/banner_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_wandroid/network/dio/api.dart';
-import 'package:flutter_app_wandroid/ui/widget/article_item.dart';
+import 'package:flutter_app_wandroid/network/base/base_page.dart';
+import 'package:flutter_app_wandroid/network/base/base_widget.dart';
+import 'package:flutter_app_wandroid/network/common/global.dart';
+import 'package:flutter_app_wandroid/network/model/home_list_model.dart';
+import 'package:flutter_app_wandroid/network/view_model/banner_view_model.dart';
+import 'package:flutter_app_wandroid/network/view_model/home_list_view_model.dart';
+import 'package:flutter_app_wandroid/ui/widget/article_widget.dart';
+import 'package:flutter_app_wandroid/ui/widget/easyRefresh_widget.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 /**
  * 首页文章列表 以及banner图
@@ -14,138 +22,134 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  ///滑动控制器 -->用于判断是否拉到屏幕底部进行加载更多的操作
-  ScrollController _controller = new ScrollController();
-  ///控制正在加载的显示  -->后修改至 easyloading
-  bool _isHide = true;
-  ///请求到的文章数据集合
-  List articlesList = [];
-  ///banner列表集合
-  List bannersList = [];
-  ///总页数
-  var totalCount = 0;
-  ///分页加载，当前页码
-  var currentPage = 0;
-  ///访问数据
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+
+  final BannerViewModel _bannerViewModel = BannerViewModel();
+  final HomeListViewModel _homeListViewModel = HomeListViewModel();
+  SwiperController swiperController;
+
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    _controller.addListener(() {
-      ///获得 SrollController 监听控件可以滚动的最大范围
-      var maxScroll = _controller.position.maxScrollExtent;
-      ///获得当前位置的像素值
-      var pixels = _controller.position.pixels;
-      ///当前滑动位置到达底部，同时还有更多数据 也就是当前页码小于总页码时，执行加载更多的操作
-      if (maxScroll == pixels && currentPage < totalCount) {
-        _getArticlelist();
-      }
-    });
-    _pullToRefresh();
+    swiperController = SwiperController();
+    swiperController.startAutoplay();
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-  ///获取文章列表
-  _getArticlelist([bool update = true]) async {
-    var data = await Api.getArticleList(currentPage);
-    if (data != null) {
-      var map = data['data'];
-      var datas = map['datas'];
-      ///文章总数
-      totalCount = map["pageCount"];
-      ///如果当前页码是0 证明是执行的下拉刷新或者第一次加载数据，要清空原来的数据集合
-      if (currentPage == 0) {
-        articlesList.clear();
-      }
-      currentPage++;
-      articlesList.addAll(datas);
-      if (update) {
-        setState(() {});
-      }
-    }
-  }
-
-  _getBanner([bool update = true]) async {
-    var data = await Api.getBanner();
-    if (data != null) {
-      bannersList.clear();
-      bannersList.addAll(data['data']);
-      if (update) {
-        setState(() {});
-      }
-    }
-  }
-  ///下拉刷新
-  Future<void> _pullToRefresh() async {
-    currentPage = 0;
-    ///组合两个异步任务，创建一个都完成后的新的Future
-    Iterable<Future> futures = [_getArticlelist(), _getBanner()];
-    await Future.wait(futures);
-    _isHide = false;
-    setState(() {});
-    return null;
-  }
-
-  ///布局
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        ///正在加载
-        Offstage(
-          offstage: !_isHide, //是否隐藏
-          // child: new Center(child: CircularProgressIndicator()),
-        ),
-
-        ///内容
-        ///一个最外层的下拉刷新组件RefreshIndicator
-        ///包裹一层ListView
-        ///_buildItem adapter条目item，banner列表也作为一个条目添加到adapter中去
-        Offstage(
-          offstage: _isHide,
-          ///SwipeRefresh 下拉刷新组件
-          child: new RefreshIndicator(
-              child: ListView.builder(
-                //item总条目数 +1代表了banner的条目,比如文章列表的总条数是9，这时候在前面插入了一个banner列表所以整个listview的总条目会变成10，所以要+1
-                itemCount: articlesList.length + 1,
-                itemBuilder: (context, i) => _buildItem(i),//adapter条目item 视图生成方法
-                controller: _controller,
-              ),
-              onRefresh: _pullToRefresh),
-        ),
-      ],
+    var imageCache = PaintingBinding.instance.imageCache;
+    int byte = imageCache.currentSizeBytes;
+    return Scaffold(
+      body: SafeArea(
+          child: RefreshWidget(
+            controller: _homeListViewModel.getEasyRefreshController,
+            onRefresh: _homeListViewModel.onRefresh,
+            onLoad: _homeListViewModel.onLoad,
+            child: CustomScrollView(
+              slivers: <Widget>[
+                SliverAppBar(
+                  backgroundColor: Colors.white,
+                  expandedHeight: 200,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: BannerWidget(viewModel: _bannerViewModel,),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: HomeListWidget(viewModel: _homeListViewModel)),
+              ],
+            )
+          )
+      ),
     );
   }
-  ///添加adapter的item条目
-  Widget _buildItem(int i) {
-    ///如果当前条目的下表索引是0  也就是第一条，则显示为banner列表，否则显示为文章列表
-    if (i == 0) {
-      return new Container(
-        height: MediaQuery.of(context).size.height*0.3,//高度设置为屏幕总高度(MediaQuery.of(context).size.height) 的 0.3
-        child: _bannerView(),
-      );
-    }
-    var itemData = articlesList[i - 1];
-    return new GestureDetector(
-      ///item点击事件
-      onTap: (){
-        debugPrint("itemClick:$i");
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class BannerWidget extends StatelessWidget {
+
+  final BannerViewModel viewModel;
+  BannerWidget({this.viewModel});
+
+  @override
+  Widget build(BuildContext context) {
+    return BasePage<BannerViewModel>(
+      viewModel: viewModel,
+      onFirstLoading: (v){
+        v.getBannerData();
       },
-      child: new ArticleItem(itemData),
+      builder: (context,model,child){
+        return BaseWidget(
+          reqStatus: model.reqStatus,
+          child: ConstrainedBox(
+            child: Swiper(
+              onTap: (index){
+                  model.cardOnTap(
+                      url: model?.getBannerList[index].url,
+                      title: model?.getBannerList[index].title);
+              },
+              autoplay: false,
+              loop: false,
+              outer: false,
+              pagination: new SwiperPagination(margin: new EdgeInsets.all(5.0)),
+              itemCount: model.getBannerList.length,
+              itemBuilder: (context,index){
+                  return new CachedNetworkImage(
+                    imageUrl: model.getBannerList[index].imagePath,
+                    placeholder: (context,url) => new Container(
+                      child: new Center(
+                        child: new CircularProgressIndicator(),
+                      ),
+                      width: 160.0,
+                      height: 80.0,
+                    ),
+                    errorWidget: (context,url,error) => Icon(Icons.error),
+                    fit: BoxFit.cover,
+                  );
+              },
+            ),
+            constraints: new BoxConstraints.loose(new Size(MediaQuery.of(context).size.width, 180.0)),
+          ),
+        );
+      },
     );
   }
+}
 
-  Widget _bannerView() {
-    List<Widget> list = bannersList.map((item) {
-      return Image.network(item['imagePath'], fit: BoxFit.cover); //fit 图片充满容器
-    }).toList();
-    ///判断数据不为空  //控制轮播时间intervalDuration
-    return list.isNotEmpty ? BannerView(list, intervalDuration: const Duration(seconds: 3),): null;
+class HomeListWidget extends StatelessWidget {
+  final HomeListViewModel viewModel;
+
+  HomeListWidget({this.viewModel});
+
+  @override
+  Widget build(BuildContext context) {
+    return BasePage<HomeListViewModel>(
+      viewModel: viewModel,
+      onFirstLoading: (v){
+        v.getHomeArticleData();
+      },
+      builder: (context,model,child){
+          return BaseWidget(
+            reqStatus: ReqStatus.success,
+            child: ListView.builder(
+                itemCount: model.getArticleList.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context,index){
+                    HomeListModel homeListModel = model.getArticleList[index];
+                    return ArticleTileWidget(
+                      onTap: ()=> viewModel.cardOnTap(title: homeListModel.title,url: homeListModel.link),
+                      title: homeListModel.title,
+                      author: homeListModel.author,
+                      chapterName: homeListModel.chapterName,
+                      niceDate: homeListModel.niceDate,
+                      index: index,
+                    );
+                }),
+          );
+      },
+    );
   }
-
-
 }

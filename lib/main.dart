@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         },
         builder: (context, model, child) {
           return MaterialApp(
-            title: 'FlutterWanAndroid',
+            title: '玩Android',
             navigatorKey: NavigatorUtil.navKey,
             builder: EasyLoading.init(),
             theme: ThemeData(

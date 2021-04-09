@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_wandroid/ui/page/classification_page.dart';
 import 'package:flutter_app_wandroid/ui/page/home_page.dart';
 import 'package:flutter_app_wandroid/ui/page/mine_page.dart';
 import 'package:flutter_app_wandroid/ui/page/project_page.dart';
@@ -29,7 +30,7 @@ class _RootPageState extends State<RootPage> {
       body: PageView(
         controller: _pageController,
         physics: NeverScrollableScrollPhysics(),
-        children: <Widget>[HomePage(), ProjectPage(), MinePage()],
+        children: <Widget>[HomePage(), ProjectPage(),ClassificationPage(), MinePage()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
