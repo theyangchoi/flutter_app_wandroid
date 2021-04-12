@@ -29,4 +29,8 @@ class ClassificationViewModel extends BaseModel{
       setState(ReqStatus.error);
     });
   }
+
+  void itemOnTap({index}){
+
+  }
 }

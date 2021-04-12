@@ -23,27 +23,49 @@ class _ClassificationPageState extends State<ClassificationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverToBoxAdapter(
-              child: ClassificationLeftWidget(viewModel: _classificationViewModel),
-            )
+        child: Row(
+          children: <Widget>[
+            Container(
+              child: CustomScrollView(
+                slivers: <Widget>[
+                  SliverToBoxAdapter(
+                    child: ClassificationLeftWidget(),
+                  )
+                ],
+              ),
+            ),
           ],
         ),
+
       ),
     );
   }
 }
+/**
+ * 分类左边的数据
+ */
+class ClassificationLeftWidget extends StatefulWidget {
 
-class ClassificationLeftWidget extends StatelessWidget {
 
-  final ClassificationViewModel viewModel;
-  ClassificationLeftWidget({this.viewModel});
+  ClassificationLeftWidget();
 
+  @override
+  _ClassificationLeftWidgetState createState() => _ClassificationLeftWidgetState();
+}
+
+class _ClassificationLeftWidgetState extends State<ClassificationLeftWidget> {
+  ClassificationViewModel _viewModel = ClassificationViewModel();
+  //当前选中索引
+  int menuPosition = 0;
+  @override
+  void initState() {
+    super.initState();
+    menuPosition = 0;
+  }
   @override
   Widget build(BuildContext context) {
     return BasePage<ClassificationViewModel>(
-      viewModel: viewModel,
+      viewModel: _viewModel,
       onFirstLoading: (v){
         v.getTreeList();
       },
@@ -56,16 +78,24 @@ class ClassificationLeftWidget extends StatelessWidget {
               physics: NeverScrollableScrollPhysics(),//上下滑动
               itemBuilder: (context,index){
                 ClassificationModel dataModel = model.getClassList[index];
-                return Container(
-                  height: 50,
-                  width: winWidth,
-                  child: Text(
-                    dataModel.name,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16,color: Colors.black),
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(width: 0.5,color: Colors.grey))
+                return GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      menuPosition = index;
+                    });
+                  },
+                  child: Container(
+                    height: 50,
+                    width: winWidth,
+                    child: Text(
+                      dataModel.name,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16,color: index == menuPosition ? Colors.blue : Colors.black),
+                    ),
+                    decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(width: 0.5,color: Colors.grey)),
+                        color: index == menuPosition ? Colors.grey[200] : Colors.white
+                    ),
                   ),
                 );
               }
@@ -75,4 +105,5 @@ class ClassificationLeftWidget extends StatelessWidget {
     );
   }
 }
+
 
