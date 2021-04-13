@@ -90,7 +90,7 @@ class _ClassificationPageState extends State<ClassificationPage> {
                   child: Container(
                     padding: EdgeInsets.all(10),
                     child: GridView.builder(
-                        itemCount: model.getClassList[menuPosition].children.length??0,
+                        itemCount:model.getClassList.isNotEmpty ? model.getClassList[menuPosition].children.length : 0,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount:2,
                           crossAxisSpacing:10,
