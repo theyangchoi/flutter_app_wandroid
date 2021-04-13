@@ -2,10 +2,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_wandroid/utils/size_util.dart';
 
-String baseUrl = 'https://www.wanandroid.com';
-
+/**
+ * 请求状态码
+ * success 成功
+ * error   失败
+ * loading 加载中
+ */
 enum ReqStatus {success,error,loading}
-
+/**
+ * 用户登录状态码
+ * login  登录中
+ * logou  退出登录
+ */
 enum UserStatus {login,logout}
 
 extension Int on int {

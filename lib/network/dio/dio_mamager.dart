@@ -59,7 +59,7 @@ class DioManager{
   /**
    * Post请求
    */
-  post(url, {data, options,withLoading = true}) async {
+  post(url, {Map<String, dynamic> parameters,dynamic data,Options options,withLoading = true}) async {
 
     if(withLoading){
       LoadingUtils.show(showMsg: "加载中...");
@@ -68,7 +68,7 @@ class DioManager{
     print('postRequest:==>path:${url}   params:${data}');
     Response response;
     try {
-      response = await _dio.post(url, queryParameters: data, options: options);
+      response = await _dio.post(url, queryParameters: parameters,data: data, options: options);
       print('postResponse==>:${response.data}');
       if(withLoading){
         LoadingUtils.dismiss();

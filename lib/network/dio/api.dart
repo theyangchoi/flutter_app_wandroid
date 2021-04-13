@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import 'dio_mamager.dart';
 
 typedef void OnResult(Map<String,dynamic> data);
@@ -30,5 +32,15 @@ class Api{
   static getTreeList() async{
     return await DioManager().get('tree/json');
   }
-  ///
+
+  ///登录
+  static toLogin({username,password}) async{
+    FormData formData = FormData.fromMap({'username':username,'password':password});
+    return await DioManager().post('user/login',data: formData);
+  }
+
+  ///退出登录
+  static toLoginOut() async{
+    return await DioManager().get('/user/logout/json');
+  }
 }

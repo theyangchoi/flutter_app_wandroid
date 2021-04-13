@@ -49,7 +49,7 @@ class _ClassificationPageState extends State<ClassificationPage> {
                   slivers: <Widget>[
                     SliverToBoxAdapter(
                       child: ListView.builder(
-                          itemCount: model.getClassList != null ? model.getClassList.length : 0,
+                          itemCount: model.getClassList.length != null ? model.getClassList.length : 0,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context,index){
@@ -90,7 +90,7 @@ class _ClassificationPageState extends State<ClassificationPage> {
                   child: Container(
                     padding: EdgeInsets.all(10),
                     child: GridView.builder(
-                        itemCount: model.getClassList[menuPosition].children.length,
+                        itemCount: model.getClassList[menuPosition].children.length??0,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount:2,
                           crossAxisSpacing:10,

@@ -1,3 +1,6 @@
+/**
+ * banner实体类
+ */
 class BannerModel{
  String desc;
  int id;
