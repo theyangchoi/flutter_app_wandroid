@@ -140,12 +140,25 @@ class HomeListWidget extends StatelessWidget {
                 itemBuilder: (context,index){
                     HomeListModel homeListModel = model.getArticleList[index];
                     return ArticleTileWidget(
+                      id: homeListModel.id,
                       onTap: ()=> viewModel.cardOnTap(title: homeListModel.title,url: homeListModel.link),
                       title: homeListModel.title,
                       author: homeListModel.author,
                       chapterName: homeListModel.chapterName,
                       niceDate: homeListModel.niceDate,
                       index: index,
+                      isCollect: homeListModel.collect,
+                      doCollect: (){
+                        if(homeListModel.collect){
+                          return HomeListViewModel()
+                              .cancelCollection(articleId: homeListModel.id)
+                              .then((value) => homeListModel.collect = !value);//将值传递过去动态更新UI,如果取消收藏,将值置为false
+                        }else{
+                          return HomeListViewModel()
+                              .addCollection(articleId: homeListModel.id)
+                              .then((value) => homeListModel.collect = value);//将值传递过去动态更新UI,如果收藏成功,将值置为true
+                        }
+                      },
                     );
                 }),
           );

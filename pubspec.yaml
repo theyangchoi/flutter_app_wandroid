@@ -30,20 +30,32 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^5.0.0
   dio: ^4.0.0
+  #banner
   banner_view: ^1.1.2
   crypto: ^2.0.6
+  #loading
   flutter_easyloading: ^3.0.0
+  #swiper
   flutter_swiper : ^1.1.6
+  #path_provider 查找文件系统上的常用位置
   path_provider: ^2.0.1
+  #cookie管理器 https://pub.dev/packages/cookie_jar
   cookie_jar: ^3.0.1
   dio_cookie_manager: 2.0.0
+  #toast util
   fluttertoast: ^4.0.1
+  #refresh
   flutter_easyrefresh: ^2.2.0
+  #webview
   webview_flutter: ^2.0.3
   url_launcher: ^6.0.3
+  #share
   share: ^2.0.1
+  #保存本地数据
   shared_preferences: ^2.0.5
+  #加载网络图片
   cached_network_image: ^2.2.0+1
+  #html解析
   flutter_html: ^0.11.1
 
 dev_dependencies:

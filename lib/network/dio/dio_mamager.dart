@@ -1,10 +1,15 @@
 
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter_app_wandroid/ui/dialog/loading_utils.dart';
 
 import 'api.dart';
 
 class DioManager{
+
+  static var cookieJar = CookieJar();
+
   Dio _dio;
   static DioManager _instance;
   BaseOptions _baseOptions;
@@ -22,13 +27,13 @@ class DioManager{
       connectTimeout: 5000,
       receiveTimeout: 5000,);
 
-    _dio = new Dio(_baseOptions);
+    _dio = new Dio(_baseOptions)
+        ..interceptors.add(CookieManager(cookieJar));//..interceptors.add(CookieManager(cookieJar))
   }
 
   /**
    * get请求
    */
-
   get(url, {data, options,withLoading = true}) async {
 
     if(withLoading){

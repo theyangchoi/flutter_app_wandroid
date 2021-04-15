@@ -41,6 +41,16 @@ class Api{
 
   ///退出登录
   static toLoginOut() async{
-    return await DioManager().get('/user/logout/json');
+    return await DioManager().get('user/logout/json');
+  }
+
+  ///收藏站内文章  参数文章id
+  static Future addCollection({articleId = 0}) async{
+    return await DioManager().post('lg/collect/$articleId/json');
+  }
+
+  ///取消收藏
+  static Future cancelCollection({articleId = 0}) async{
+    return await DioManager().post('lg/uncollect_originId/$articleId/json');
   }
 }

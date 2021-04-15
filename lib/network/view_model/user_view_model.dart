@@ -6,6 +6,7 @@ import 'package:flutter_app_wandroid/network/base/base_model.dart';
 import 'package:flutter_app_wandroid/network/common/global.dart';
 import 'package:flutter_app_wandroid/network/dio/api.dart';
 import 'package:flutter_app_wandroid/network/model/user_model.dart';
+import 'package:flutter_app_wandroid/root_page.dart';
 import 'package:flutter_app_wandroid/utils/navigator_util.dart';
 import 'package:flutter_app_wandroid/utils/shared_preferences_util.dart';
 import 'package:flutter_app_wandroid/utils/toast.dart';
@@ -38,12 +39,11 @@ class UserViewModel extends BaseModel{
 
 
   void loginOut(){
-    if(userStatus == UserStatus.logout){
+    if (userStatus == UserStatus.logout) {
       NavigatorUtil.maybePop();
-      return showToast(message: '还未登录');
+      return showToast(message: '您还未登录');
     }
-    //移除已保存的用户信息
-    Api.toLoginOut().then((value){
+    Api.toLoginOut().then((value) {
       SharedPreferencesUtil.remove(SharedPreferencesUtil.userInfo);
       userStatus = UserStatus.logout;
       userModel.admin = false;
@@ -59,9 +59,9 @@ class UserViewModel extends BaseModel{
       userModel.type = 0;
       userModel.username = '';
       showToast(message: '退出成功');
-      NavigatorUtil.maybePop();
       setState(ReqStatus.success);
-    }).catchError((e){
+      NavigatorUtil.pushAndRemoveUntil(RootPage());
+    }).catchError((e) {
       showToast(message: '退出失败');
     });
   }

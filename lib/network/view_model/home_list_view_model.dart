@@ -1,10 +1,13 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_app_wandroid/network/base/base_model.dart';
 import 'package:flutter_app_wandroid/network/common/global.dart';
 import 'package:flutter_app_wandroid/network/dio/api.dart';
 import 'package:flutter_app_wandroid/network/model/home_list_model.dart';
 import 'package:flutter_app_wandroid/ui/page/web_view_page.dart';
 import 'package:flutter_app_wandroid/utils/navigator_util.dart';
+import 'package:flutter_app_wandroid/utils/shared_preferences_util.dart';
+import 'package:flutter_app_wandroid/utils/toast.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 /**
@@ -36,6 +39,38 @@ class HomeListViewModel extends BaseModel{
       }
     }).catchError((e) {
       setState(ReqStatus.error);
+    });
+  }
+
+  Future<bool> addCollection({@required articleId}){
+    return Api.addCollection(articleId: articleId).then((value) {
+      if (value['errorCode'] == 0) {
+        showToast(message: '收藏成功');
+        setState(ReqStatus.success);
+        return Future.value(true);
+      } else {
+        showToast(message: '${value['errorMsg']}');
+        return Future.value(false);
+      }
+    }).catchError((e) {
+      showToast(message: '出现错误了');
+      return Future.value(false);
+    });
+  }
+
+  Future<bool> cancelCollection({@required articleId}){
+    return Api.cancelCollection(articleId: articleId).then((value) {
+      if (value['errorCode'] == 0) {
+        showToast(message: '取消成功');
+        setState(ReqStatus.success);
+        return Future.value(true);
+      } else {
+        showToast(message: '${value['errorMsg']}');
+        return Future.value(false);
+      }
+    }).catchError((e) {
+      showToast(message: '出现错误了');
+      return Future.value(false);
     });
   }
 

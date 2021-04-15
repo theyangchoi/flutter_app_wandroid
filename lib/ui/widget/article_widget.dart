@@ -3,12 +3,17 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_wandroid/network/common/theme.dart';
+import 'package:flutter_app_wandroid/network/dio/api.dart';
+import 'package:flutter_app_wandroid/network/view_model/home_list_view_model.dart';
+import 'package:flutter_app_wandroid/utils/shared_preferences_util.dart';
+import 'package:flutter_app_wandroid/utils/toast.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:html/dom.dart' as dom;
 
 
 class ArticleTileWidget extends StatefulWidget {
+  final int id;
   final Function onTap;
   final String title;
   final String subTitle;
@@ -20,17 +25,17 @@ class ArticleTileWidget extends StatefulWidget {
   final String niceDate;
   final int index;
 
-  ArticleTileWidget(
-      {this.onTap,
-      this.title = "",
-      this.subTitle,
-      this.time,
-      this.doCollect,
-      this.isCollect = false,
-      this.author,
-      this.chapterName,
-      this.niceDate,
-      this.index});
+  ArticleTileWidget({this.id,
+        this.onTap,
+        this.title = "",
+        this.subTitle,
+        this.time,
+        this.doCollect,
+        this.isCollect = false,
+        this.author,
+        this.chapterName,
+        this.niceDate,
+        this.index});
   @override
   _ArticleTileWidgetState createState() => _ArticleTileWidgetState();
 }
@@ -83,12 +88,21 @@ class _ArticleTileWidgetState extends State<ArticleTileWidget>
               alignment: Alignment.centerRight,
               child: new GestureDetector(
                   onTap: (){
-                    debugPrint("collection:${widget.index}");
+                    print('======isCollect=======${widget.isCollect}');
+                    widget.doCollect().then((value){
+                      print('=====doCollect========${value}');
+                      if(value){
+                        setState(() {
+                          widget.isCollect = true;
+                        });
+                      }else{
+                        setState(() {
+                          widget.isCollect = false;
+                        });
+                      }
+                    });
                   },
-                  child: Icon(
-                      Icons.favorite,
-                      color: widget.isCollect ? Colors.red : Colors.grey
-                  )
+                  child: widget.isCollect ? Icon(Icons.favorite, color: Colors.red) :Icon(Icons.favorite_border,color: Colors.grey)
               ),
             )
         )
