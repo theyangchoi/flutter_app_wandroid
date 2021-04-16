@@ -3,14 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_wandroid/network/common/theme.dart';
-import 'package:flutter_app_wandroid/network/dio/api.dart';
-import 'package:flutter_app_wandroid/network/view_model/home_list_view_model.dart';
-import 'package:flutter_app_wandroid/utils/shared_preferences_util.dart';
-import 'package:flutter_app_wandroid/utils/toast.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
-import 'package:html/dom.dart' as dom;
-
 
 class ArticleTileWidget extends StatefulWidget {
   final int id;
@@ -122,7 +115,7 @@ class _ArticleTileWidgetState extends State<ArticleTileWidget>
           child: title,),
         new Padding(
           padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 10.0),
-          child: rowCollection,)
+          child: rowCollection,),
       ],
     );
 

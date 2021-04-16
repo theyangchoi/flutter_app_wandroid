@@ -28,7 +28,7 @@ class DioManager{
       receiveTimeout: 5000,);
 
     _dio = new Dio(_baseOptions)
-        ..interceptors.add(CookieManager(cookieJar));//..interceptors.add(CookieManager(cookieJar))
+        ..interceptors.add(CookieManager(cookieJar));//添加cookieJar  拦截器也可以在这里添加
   }
 
   /**
